@@ -1,0 +1,77 @@
+#include <iostream>
+using namespace std;
+
+// AVLTree.h: AVL 트리 클래스 CAVLTree
+#include "BinSrchTree.h"
+class AVLTree : public BinSrchTree {
+public : 
+			// 노드의 균형인수를 qksghks
+            int getHeightDiff(BinaryNode *node) {
+            	if( node==NULL )
+                	return 0;
+                int hLeft = getHeight(node -> getLeft());
+                int hRight = getHeight(node -> getRight());
+                return hLeft - hRight;
+            }
+            // LL 회전 함수
+            BinaryNode *rotateLL(BinaryNode* parent) {
+				        BinaryNode* child = parent -> getLeft();
+                child -> setRight (parent);
+                return child;
+            }
+            // RR 회전 함수
+            BinaryNode *rotateRR(BinaryNode* parent) {
+				        BinaryNode* child = parent -> getRight();
+                parent -> setRight(child -> getLeft());
+                child -> setLeft(parent);
+                return child;
+            }
+            // RL 회전 함수
+            BinaryNode *rotateRR(BinaryNode* parent) {
+				        BinaryNode* child = parent -> getRight();
+                parent -> setRight (rotateLL(child));
+                return rotateRR(parent);
+            // LR 회전 함수
+            BinaryNode *rotateLR(BinaryNode* parent) {
+				        BinaryNode* child = parent -> getLeft();
+                parent -> setLeft (rotateRR(child));
+                return rotateLL(parent);
+            // 트리를 균형트리로 만든다
+            BinaryNode *reBalance (BinaryNode *parent) {
+            	int hDiff = getHeightDiff(parent);
+                if ( hDiff > 1) {
+                	if ( getHeightDiff(parent -> getLeft() > 0 )
+                    	parent = rotateLL( parent );
+                  else parent = retateLR( parent );
+                else if ( hDiff < -1 ) {
+                	if ( getHeightDiff ( parent -> getRight() ) < 0 )
+                    	parent = rotateRR ( parent );
+                  else parent = rotateRL ( parent );
+                }
+                return parent;
+                // AVL 트리의 삽입 연산
+                void insert( int data ) {
+                	if (isEmpty()) root = new BinaryNode ( data );
+                  else root = insertAVL ( root, data );
+                    }
+                BinaryNode* insertAVL(BinaryNode* parent, int data) {
+                	if ( data < parent -> getData() ) {
+						            if ( parent -> getLeft() != NULL )
+                        	 parent -> setLeft(insertAVL(parent -> getLeft(), data));
+                        else parent -> setLeft ( new BinaryNode(data) );
+                        return reBalance(parent);
+                    }
+                   else if ( data > parent -> getData() ) {
+						            if ( parent -> getRight() != NULL )
+                        	 parent -> setRight(insertAVL(parent -> getRight(), data));
+                        else parent -> setRight ( new BinaryNode(data) );
+                        return reBalance(parent);
+                    }
+                    else {
+							              cout << "중복된 키 에러" << endl;
+                            return NULL;
+                    }
+          }
+};
+
+//reference "c++로 쉽게 풀어쓴 자료구조"
